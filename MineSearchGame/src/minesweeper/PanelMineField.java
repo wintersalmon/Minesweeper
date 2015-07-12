@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class PanelMineField extends MyPanel {
-	MineField itsMineField;
+	MineFieldHandler itsMineField;
 	JPanel [][] itsTilePanels;
 	JLabel [][] itsTilePanelLabels;
 	PanelMineField(int width, int height) {
@@ -15,7 +15,7 @@ public class PanelMineField extends MyPanel {
 		itsTilePanels = null;
 		itsTilePanelLabels = null;
 	}
-	public void setMineField(MineField field) {
+	public void setMineFieldHandler(MineFieldHandler field) {
 		if(field == null) return;
 		if(itsMineField != null) removeAll();
 		
@@ -40,7 +40,6 @@ public class PanelMineField extends MyPanel {
 				this.add(curTile);
 			}
 		}
-		
 		updateAllTile();
 	}
 	public void updateAllTile() {

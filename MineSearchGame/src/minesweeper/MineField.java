@@ -7,9 +7,9 @@ import minesweeperDataStructure.*;
 public class MineField extends Field {
 	public static final int TYPE_MINE = -1;
 	public static final int TYPE_BLANK = 0;
-	protected enum STATUS {
-		OPEN, CLOSED, MARKED, QUESTIONED
-	};
+	public static final int STATUS_CLOSED = 0;
+	public static final int STATUS_OPEN = 1;
+	public static final int STATUS_MARKED = 2;
 	public MineField(int x, int y) {
 		super(x, y);
 	}

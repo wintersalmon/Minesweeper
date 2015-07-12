@@ -24,7 +24,6 @@ public class MinesweeperGUI extends JFrame implements ActionListener, MouseListe
 	protected JButton btnStartGame;
 	protected PanelGameControl itsControllPanel;
 	protected PanelMineField itsMineFieldPanel;
-	protected MineField itsMineField;
 	protected MineFieldHandler itsMineFieldHandler;
 	
 	public MinesweeperGUI() {
@@ -32,14 +31,12 @@ public class MinesweeperGUI extends JFrame implements ActionListener, MouseListe
 	}
 	public MinesweeperGUI(int field_count_x, int field_count_y, int mine_count) {
 		super("Minesweeper");
-		
 		fieldCountX = field_count_x;
 		fieldCountY = field_count_y;
 		mineCount = mine_count;
-		itsMineField = null;
-		itsMineFieldHandler = new MineFieldHandler();
-		
+		itsMineFieldHandler = new MineFieldHandler(field_count_x, field_count_y, mine_count);
 		initScreen(fieldCountX, fieldCountY);
+		ResetMisson();
 	}
 	protected void initScreen(int field_count_x, int field_count_y) {
 		int screen_width = DEFAULT_TILE_SIZE * field_count_x;
@@ -64,38 +61,30 @@ public class MinesweeperGUI extends JFrame implements ActionListener, MouseListe
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		setVisible(true);
-		
-		ResetMisson();
 	}
 	public static void main(String [] args) {
 		MinesweeperGUI gui = new MinesweeperGUI();
-		gui.getBackground();
+		gui.setVisible(true);
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		ResetMisson();
 	}
 	protected void ResetMisson() {
-		itsMineField = MineField.GenerateRandomMineField(fieldCountX, fieldCountY, mineCount);
-		if(itsMineField == null) {
-			System.err.println("Reset Misson Failed");
-			return;
-		}
-		itsMineFieldHandler.setMineField(itsMineField);
-		itsMineFieldPanel.setMineField(itsMineField);
-		itsControllPanel.setMineField(itsMineField);
+		itsMineFieldHandler.CreateNewMission();
+		itsControllPanel.setMineFieldHandler(itsMineFieldHandler);
+		itsMineFieldPanel.setMineFieldHandler(itsMineFieldHandler);
+		itsMineFieldPanel.updateAllTile();
+		itsControllPanel.updateStatus();
 	}
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int idx_y = e.getX() / (itsMineFieldPanel.getWidth() / itsMineField.getMaxX() );
-		int idx_x = e.getY() / (itsMineFieldPanel.getHeight() / itsMineField.getMaxY() );
+		int idx_y = e.getX() / (itsMineFieldPanel.getWidth() / itsMineFieldHandler.getMaxX() );
+		int idx_x = e.getY() / (itsMineFieldPanel.getHeight() / itsMineFieldHandler.getMaxY() );
 		int click_type = e.getButton();
 		if( itsMineFieldHandler.ClickTile(idx_x, idx_y, click_type) != 0 ) {
 			itsMineFieldPanel.updateAllTile();
-			setVisible(true);
-			int maxMineCount = itsMineFieldHandler.getMaxMineCount();
-			int curMineCount = itsMineFieldHandler.getCurMineCount();
-			itsControllPanel.updateMineCount("" + (maxMineCount - curMineCount));
+			itsControllPanel.updateStatus();
 		}
 	}
 	public void mousePressed(MouseEvent e) {}

@@ -15,7 +15,7 @@ public class PanelGameControl extends MyPanel {
 	protected JLabel lblTimeCount;
 	protected JButton btnStartButton;
 	protected JPanel [] panels;
-	protected MineField itsMineField;
+	protected MineFieldHandler itsMineFieldHandler;
 	PanelGameControl(int width, int height) {
 		super(width,height);
 		
@@ -32,7 +32,7 @@ public class PanelGameControl extends MyPanel {
 		componetArray[1] = btnStartButton;
 		componetArray[2] = lblTimeCount;
 
-		itsMineField = null;
+		itsMineFieldHandler = null;
 		setLayout(new GridLayout(1,3));
 		panels = new JPanel[3];
 		for(int i=0; i<3; i++) {
@@ -44,20 +44,21 @@ public class PanelGameControl extends MyPanel {
 			add(panels[i]);
 		}
 	}
-	public void setMineField(MineField field) {
-		itsMineField = field;
-		updateMineCount("0");
-		updateTimeCount("0");
+	public void setMineFieldHandler(MineFieldHandler field) {
+		itsMineFieldHandler = field;
+		updateStatus();
 		revalidate();
 		repaint();
 	}
 	public void addStartButtonListener(ActionListener listener) {
 		btnStartButton.addActionListener(listener);
 	}
-	public void updateMineCount(String str) {
-		lblMineCount.setText(str);
+	public void updateStatus() {
+		updateLabel(lblMineCount, itsMineFieldHandler.getRemainingMineCount());
+		updateLabel(lblTimeCount, itsMineFieldHandler.getTimeCount());
 	}
-	public void updateTimeCount(String str) {
-		lblTimeCount.setText(str);
+	protected void updateLabel(JLabel label, int count) {
+		String str = Integer.toString(count);
+		label.setText(str);
 	}
 }
