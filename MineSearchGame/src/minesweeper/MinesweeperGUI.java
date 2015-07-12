@@ -27,10 +27,10 @@ public class MinesweeperGUI extends JFrame implements ActionListener, MouseListe
 	protected MineField itsMineField;
 	protected MineFieldHandler itsMineFieldHandler;
 	
-	MinesweeperGUI() {
+	public MinesweeperGUI() {
 		this(DEFAULT_FIELD_COUNT_X, DEFAULT_FIELD_COUNT_Y, DEFAULT_MINE_COUNT);
 	}
-	MinesweeperGUI(int field_count_x, int field_count_y, int mine_count) {
+	public MinesweeperGUI(int field_count_x, int field_count_y, int mine_count) {
 		super("Minesweeper");
 		
 		fieldCountX = field_count_x;
