@@ -1,20 +1,26 @@
 package minesweeper;
 
-import java.awt.GridLayout;
-import java.awt.Point;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 @SuppressWarnings("serial")
 public class MinesweeperGUI extends JFrame implements ActionListener, MouseListener {
+	protected final static int DEFAULT_TOP_PANEL_HEIGHT = 50;
+	protected final static int DEFAULT_TILE_SIZE = 50;
+	protected final static int DEFAULT_FIELD_COUNT_X = 9;
+	protected final static int DEFAULT_FIELD_COUNT_Y = 9;
+	protected final static int DEFAULT_MINE_COUNT = 10;
+	
+	protected int fieldCountX;
+	protected int fieldCountY;
+	protected int mineCount;
+	
 	protected JButton btnStartGame;
 	protected PanelGameControl itsControllPanel;
 	protected PanelMineField itsMineFieldPanel;
@@ -22,42 +28,44 @@ public class MinesweeperGUI extends JFrame implements ActionListener, MouseListe
 	protected MineFieldHandler itsMineFieldHandler;
 	
 	MinesweeperGUI() {
-		super("Minesweeper");
-		this.setLayout(new BoxLayout(this.getContentPane() ,BoxLayout.PAGE_AXIS ));
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		initScreen(500,600);
-		initData();
+		this(DEFAULT_FIELD_COUNT_X, DEFAULT_FIELD_COUNT_Y, DEFAULT_MINE_COUNT);
 	}
-	protected void initData() {
+	MinesweeperGUI(int field_count_x, int field_count_y, int mine_count) {
+		super("Minesweeper");
+		
+		fieldCountX = field_count_x;
+		fieldCountY = field_count_y;
+		mineCount = mine_count;
 		itsMineField = null;
 		itsMineFieldHandler = new MineFieldHandler();
-	}
-	protected void initScreen(int screen_size_x, int screen_size_y) {
-		//set Screen Size
-		//this.setMinimumSize(new Dimension(500,600));
-		//this.setPreferredSize(new Dimension(screen_size_x,screen_size_y));
-		//this.setMaximumSize(new Dimension(400,500));
-		this.setSize(screen_size_x, screen_size_y);
 		
-		// add Panels to Screen
-		itsControllPanel = new PanelGameControl(screen_size_x, screen_size_y/6);
-		itsMineFieldPanel = new PanelMineField(screen_size_x, screen_size_y/6 * 5);
-	
+		initScreen(fieldCountX, fieldCountY);
+	}
+	protected void initScreen(int field_count_x, int field_count_y) {
+		int screen_width = DEFAULT_TILE_SIZE * field_count_x;
+		int screen_height_top = DEFAULT_TOP_PANEL_HEIGHT;
+		int screen_height_bottom = DEFAULT_TILE_SIZE * field_count_y;
+		int screen_height = screen_height_top + screen_height_bottom;
+		
+		setLayout(new BoxLayout(this.getContentPane() ,BoxLayout.PAGE_AXIS));
+		setMinimumSize(new Dimension(screen_width,screen_height));
+		setPreferredSize(new Dimension(screen_width,screen_height));
+		setMaximumSize(new Dimension(screen_width,screen_height));
+		
+		itsControllPanel = new PanelGameControl(screen_width, screen_height_top);
+		itsMineFieldPanel = new PanelMineField(screen_width, screen_height_bottom);
+		
 		add(itsControllPanel);
 		add(itsMineFieldPanel);
 		
-		// add Components to itsControllPanel
-		btnStartGame = new JButton("START");
-		itsControllPanel.setStartButton(btnStartGame);
-		btnStartGame.addActionListener(this);
+		itsControllPanel.addStartButtonListener(this);
+		itsMineFieldPanel.addMouseListener(this);
+
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
+		setVisible(true);
 		
-		// add Components to itsMineFieldPanel
-		itsMineFieldPanel.setLayout(new GridLayout(1,1));
-		JPanel placeHolder = new JPanel();
-		itsMineFieldPanel.add(placeHolder);
-		
-		this.setResizable(false);
-		this.setVisible(true);
+		ResetMisson();
 	}
 	public static void main(String [] args) {
 		MinesweeperGUI gui = new MinesweeperGUI();
@@ -65,54 +73,30 @@ public class MinesweeperGUI extends JFrame implements ActionListener, MouseListe
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == btnStartGame) {
-			System.out.println("newGame");
-			
-			int max_x = 8;
-			int max_y = 8;
-			int mine_count = 8;
-			itsMineField = MineField.GenerateRandomMineField(max_x, max_y, mine_count);
-			if(itsMineField == null) {
-				System.out.println("ERROR");
-				return;
-			}
-			itsMineFieldHandler.setMineField(itsMineField);
-			itsMineFieldPanel.setMineField(itsMineField);
-
-			this.setVisible(true);
-			this.addMouseListener(this);
+		ResetMisson();
+	}
+	protected void ResetMisson() {
+		itsMineField = MineField.GenerateRandomMineField(fieldCountX, fieldCountY, mineCount);
+		if(itsMineField == null) {
+			System.err.println("Reset Misson Failed");
+			return;
 		}
+		itsMineFieldHandler.setMineField(itsMineField);
+		itsMineFieldPanel.setMineField(itsMineField);
+		itsControllPanel.setMineField(itsMineField);
 	}
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if( itsMineFieldPanel.getBounds().contains(e.getPoint()) ) {
-			Point pos = e.getPoint();
-			System.out.println("before" + e.getX() + "," + e.getY());
-			Point convertPos = SwingUtilities.convertPoint(this, pos, itsMineFieldPanel);
-			int pos_x = (int)Math.floor( convertPos.getX() );
-			int pos_y = (int)Math.floor( convertPos.getY() );
-			System.out.println("after" + pos_x + "," + pos_y);
-			
-			System.out.println(pos_x + "," + itsMineFieldPanel.getWidth() + "," + itsMineField.getMaxX());
-			int idx_y = pos_x / (itsMineFieldPanel.getWidth() / itsMineField.getMaxX() );
-			int idx_x = pos_y / (itsMineFieldPanel.getHeight() / itsMineField.getMaxY() );
-			int click_type = e.getButton();
-			System.out.println("Clicked at(" + idx_x + "," + idx_y + ") with" + click_type); 
-			if( itsMineFieldHandler.ClickTile(idx_x, idx_y, click_type) != 0 ) {
-				for(int x=0; x<itsMineField.getMaxX(); x++) {
-					for(int y=0; y<itsMineField.getMaxY(); y++) {
-						itsMineFieldPanel.updateTile(x, y);
-					}
-				}
-				//itsMineFieldPanel.updateAlltile();
-				int maxMineCount = itsMineFieldHandler.getMaxMineCount();
-				int curMineCount = itsMineFieldHandler.getCurMineCount();
-				itsControllPanel.updateMineCount("" + (maxMineCount - curMineCount));
-				System.out.println("Click Success");
-			}
-			this.setVisible(true);
+		int idx_y = e.getX() / (itsMineFieldPanel.getWidth() / itsMineField.getMaxX() );
+		int idx_x = e.getY() / (itsMineFieldPanel.getHeight() / itsMineField.getMaxY() );
+		int click_type = e.getButton();
+		if( itsMineFieldHandler.ClickTile(idx_x, idx_y, click_type) != 0 ) {
+			itsMineFieldPanel.updateAllTile();
+			setVisible(true);
+			int maxMineCount = itsMineFieldHandler.getMaxMineCount();
+			int curMineCount = itsMineFieldHandler.getCurMineCount();
+			itsControllPanel.updateMineCount("" + (maxMineCount - curMineCount));
 		}
-		//if(e.getPoint(). == itsMineFieldPanel)
 	}
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}

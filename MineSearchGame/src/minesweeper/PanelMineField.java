@@ -1,49 +1,29 @@
 package minesweeper;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-public class PanelMineField extends JPanel {
+public class PanelMineField extends MyPanel {
 	MineField itsMineField;
 	JPanel [][] itsTilePanels;
 	JLabel [][] itsTilePanelLabels;
-	PanelMineField() {
-		this(500,500);
-	}
-	PanelMineField(int size_width, int size_height) {
-		this(size_width, size_height, null);
-	}
-	PanelMineField(int size_width, int size_height, MineField field) {
-		initPanelMineField(size_width, size_height);
+	PanelMineField(int width, int height) {
+		super(width,height);
 		itsMineField = null;
 		itsTilePanels = null;
 		itsTilePanelLabels = null;
-		initMinefield(field);
+	}
+	public void setMineField(MineField field) {
+		if(field == null) return;
+		if(itsMineField != null) removeAll();
 		
-	}
-	protected void initPanelMineField(int x, int y) {
-		this.setMinimumSize(new Dimension(500,500));
-		this.setPreferredSize(new Dimension(x,y));
-		this.setMaximumSize(new Dimension(1000,800));
-		this.setBackground(Color.CYAN);
-		itsMineField = null;
-		this.setVisible(true);
-	}
-	protected void initMinefield(MineField field) {
-		if(field == null) {
-			return;
-		}
 		itsMineField = field;
 		int max_x = itsMineField.getMaxX();
 		int max_y = itsMineField.getMaxY();
 		
-		this.removeAll();
-		this.setLayout(new GridLayout(max_x,max_y));
+		setLayout(new GridLayout(max_x,max_y));
 		
 		itsTilePanels = new JPanel[max_x][];
 		itsTilePanelLabels = new JLabel[max_x][];
@@ -55,29 +35,24 @@ public class PanelMineField extends JPanel {
 		for(int x=0; x<max_x; x++) {
 			for(int y=0; y<max_y; y++) {
 				JPanel curTile = itsTilePanels[x][y] = new JPanel();
-				JLabel curLbl = itsTilePanelLabels[x][y] = new JLabel();
-				
-				updateTile(x,y);
-				
+				JLabel curLbl = itsTilePanelLabels[x][y] = new JLabel();				
 				curTile.add(curLbl);
 				this.add(curTile);
 			}
 		}
-		//updateAlltile();
 		
-		this.setVisible(true);
+		updateAllTile();
 	}
-	public void setMineField(MineField field) {
-		initMinefield(field);
-	}
-	public void updateAlltile() {
+	public void updateAllTile() {
 		for(int x=0; x<itsMineField.getMaxX(); x++) {
-			for(int y=0; y>itsMineField.getMaxY(); y++) {
+			for(int y=0; y<itsMineField.getMaxY(); y++) {
 				updateTile(x,y);
 			}
 		}
+		revalidate();
+		repaint();
 	}
-	public void updateTile(int idx_x, int idx_y) {
+	protected void updateTile(int idx_x, int idx_y) {
 		if(idx_x < 0 || idx_x >= itsMineField.getMaxX() || idx_y < 0 || idx_y >= itsMineField.getMaxY() )
 			return;
 		JLabel curLbl = itsTilePanelLabels[idx_x][idx_y];

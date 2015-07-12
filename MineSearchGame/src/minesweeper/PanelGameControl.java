@@ -1,43 +1,58 @@
 package minesweeper;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-
-import javax.swing.BoxLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 @SuppressWarnings("serial")
-public class PanelGameControl extends JPanel {
-	JLabel lblMineCount;
-	JLabel lblTimeCount;
-	PanelGameControl() {
-		this(500,500);
+public class PanelGameControl extends MyPanel {
+	protected JLabel lblMineCount;
+	protected JLabel lblTimeCount;
+	protected JButton btnStartButton;
+	protected JPanel [] panels;
+	protected MineField itsMineField;
+	PanelGameControl(int width, int height) {
+		super(width,height);
+		
+		int contentWidth = width/3;
+		int contentHeight = height-10;
+		
+		lblMineCount = new JLabel("0", SwingConstants.CENTER);
+		lblTimeCount = new JLabel("0", SwingConstants.CENTER);
+		btnStartButton = new JButton("START");
+
+		Component [] componetArray;
+		componetArray = new Component[3];
+		componetArray[0] = lblMineCount;
+		componetArray[1] = btnStartButton;
+		componetArray[2] = lblTimeCount;
+
+		itsMineField = null;
+		setLayout(new GridLayout(1,3));
+		panels = new JPanel[3];
+		for(int i=0; i<3; i++) {
+			panels[i] = new JPanel();
+			componetArray[i].setMinimumSize(new Dimension(contentWidth, contentHeight));
+			componetArray[i].setPreferredSize(new Dimension(contentWidth, contentHeight));
+			componetArray[i].setMaximumSize(new Dimension(contentWidth, contentHeight));
+			panels[i].add(componetArray[i]);
+			add(panels[i]);
+		}
 	}
-	PanelGameControl(int size_width, int size_height) {
-		initPanelMineField(size_width, size_height);
-		lblMineCount = new JLabel("0");
-		lblTimeCount = new JLabel("0");
+	public void setMineField(MineField field) {
+		itsMineField = field;
+		updateMineCount("0");
+		updateTimeCount("0");
+		revalidate();
+		repaint();
 	}
-	protected void initPanelMineField(int size_width, int size_height) {
-		this.setMinimumSize(new Dimension(500,100));
-		this.setPreferredSize(new Dimension(size_width, size_height));
-		this.setMaximumSize(new Dimension(1000,200));
-		this.setBackground(Color.BLUE);
-	}
-	public void setStartButton(JButton btnStartGame) {
-	// add Components to itsControllPanel
-		this.setLayout(new BoxLayout(this ,BoxLayout.Y_AXIS ));
-		btnStartGame.setMinimumSize(new Dimension(100,50));
-		btnStartGame.setPreferredSize(new Dimension(100,50));
-		btnStartGame.setMaximumSize(new Dimension(100,50));
-		btnStartGame.setAlignmentX(Component.CENTER_ALIGNMENT);
-		btnStartGame.setAlignmentY(Component.CENTER_ALIGNMENT);
-		this.add(btnStartGame);
-		this.add(lblMineCount);
-		this.add(lblTimeCount);
+	public void addStartButtonListener(ActionListener listener) {
+		btnStartButton.addActionListener(listener);
 	}
 	public void updateMineCount(String str) {
 		lblMineCount.setText(str);
