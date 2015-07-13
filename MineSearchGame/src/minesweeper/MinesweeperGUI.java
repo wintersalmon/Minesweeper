@@ -20,7 +20,6 @@ public class MinesweeperGUI extends JFrame implements ActionListener, MouseListe
 	protected int fieldCountX;
 	protected int fieldCountY;
 	protected int mineCount;
-	
 	protected JButton btnStartGame;
 	protected PanelGameControl itsControllPanel;
 	protected PanelMineField itsMineFieldPanel;
@@ -36,6 +35,8 @@ public class MinesweeperGUI extends JFrame implements ActionListener, MouseListe
 		mineCount = mine_count;
 		itsMineFieldHandler = new MineFieldHandler(field_count_x, field_count_y, mine_count);
 		initScreen(fieldCountX, fieldCountY);
+		itsControllPanel.setMineFieldHandler(itsMineFieldHandler);
+		itsMineFieldPanel.setMineFieldHandler(itsMineFieldHandler);
 		ResetMisson();
 	}
 	protected void initScreen(int field_count_x, int field_count_y) {
@@ -72,8 +73,6 @@ public class MinesweeperGUI extends JFrame implements ActionListener, MouseListe
 	}
 	protected void ResetMisson() {
 		itsMineFieldHandler.CreateNewMission();
-		itsControllPanel.setMineFieldHandler(itsMineFieldHandler);
-		itsMineFieldPanel.setMineFieldHandler(itsMineFieldHandler);
 		itsMineFieldPanel.updateAllTile();
 		itsControllPanel.updateStatus();
 	}

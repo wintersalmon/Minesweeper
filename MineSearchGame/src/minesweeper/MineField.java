@@ -5,8 +5,10 @@ import java.util.Random;
 import minesweeperDataStructure.*;
 
 public class MineField extends Field {
+	public static final int TYPE_ERROR = -2;
 	public static final int TYPE_MINE = -1;
 	public static final int TYPE_BLANK = 0;
+	public static final int STATUS_ERROR = 0;
 	public static final int STATUS_CLOSED = 0;
 	public static final int STATUS_OPEN = 1;
 	public static final int STATUS_MARKED = 2;

@@ -1,7 +1,6 @@
 package minesweeper;
 
 import javax.swing.JOptionPane;
-
 import minesweeperDataStructure.Tile;
 
 public class MineFieldHandler {
@@ -26,14 +25,29 @@ public class MineFieldHandler {
 		curTimeCount = 0;
 		bGameOver = false;
 	}
-	
 	public boolean isGameOver() { return bGameOver; }
 	public int getTimeCount() { return curTimeCount; }
 	public int getRemainingMineCount() { return defaultMineCount - markedTileCount; }
 	public int getMaxX() { return defaultFieldCountX; }
 	public int getMaxY() { return defaultFieldCountY; }
 	public int getMaxMineCount() { return defaultMineCount; }
-	public Tile getTile(int index_x, int index_y) { return itsMineField.getTile(index_x, index_y); }
+	public int getTileStatus(int idx_x, int idx_y) {
+		Tile t = itsMineField.getTile(idx_x, idx_y);
+		if(t != null) {
+			return t.getStatus();
+		} else {
+			return MineField.STATUS_ERROR;
+		}
+	}
+	public int getTileType(int idx_x, int idx_y) {
+		Tile t = itsMineField.getTile(idx_x, idx_y);
+		if(t != null) {
+			return t.getType();
+		} else {
+			return MineField.TYPE_ERROR;
+		}
+	}
+	//public Tile getTile(int index_x, int index_y) { return itsMineField.getTile(index_x, index_y); }
 	protected void ZeroLoop(int idx_x, int idx_y)
 	{
 		Tile selectedTile = itsMineField.getTile(idx_x, idx_y);

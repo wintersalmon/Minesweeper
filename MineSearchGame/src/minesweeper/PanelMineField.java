@@ -6,6 +6,10 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class PanelMineField extends MyPanel {
+	protected final static String TILE_STATUS_STR_CLOSED = "O";
+	protected final static String TILE_STATUS_STR_OPEN = ".";
+	protected final static String TILE_STATUS_STR_MARKED = "C";
+	protected final static String TILE_TYPE_STR_MINE = "X";
 	MineFieldHandler itsMineField;
 	JPanel [][] itsTilePanels;
 	JLabel [][] itsTilePanelLabels;
@@ -54,24 +58,22 @@ public class PanelMineField extends MyPanel {
 	protected void updateTile(int idx_x, int idx_y) {
 		if(idx_x < 0 || idx_x >= itsMineField.getMaxX() || idx_y < 0 || idx_y >= itsMineField.getMaxY() )
 			return;
+		int type = itsMineField.getTileType(idx_x, idx_y);
+		int status = itsMineField.getTileStatus(idx_x, idx_y);
 		JLabel curLbl = itsTilePanelLabels[idx_x][idx_y];
-		int type = itsMineField.getTile(idx_x, idx_y).getType();
-		int status = itsMineField.getTile(idx_x, idx_y).getStatus();
-		
-		String str = "";
+		String str = null;
 		if(status == 0) {
-			str += "O";
+			str = TILE_STATUS_STR_CLOSED;
 		} else if(status == 1) {
 			if(type == -1)
-				str += "X";
+				str = TILE_TYPE_STR_MINE;
 			else if (type == 0)
-				str += ".";
-			else	
-				str += type;
+				str = TILE_STATUS_STR_OPEN;
+			else
+				str = Integer.toString(type);
 		} else {
-			str += "C";
+			str = TILE_STATUS_STR_MARKED;
 		}
-
 		curLbl.setText(str);
 	}
 }
